@@ -17,7 +17,9 @@
     "commander": "^12.1.0",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
-    "readline-sync": "^1.4.10"
+    "on-change": "^5.0.1",
+    "readline-sync": "^1.4.10",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/create-config": "^1.0.0",
