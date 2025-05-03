@@ -1,16 +1,15 @@
-export default (elements, state) => (path, value) => {
-    if (path === 'form.error') {
-      const input = elements.input;
-      const feedback = elements.feedback;
-  
-      input.classList.toggle('is-invalid', !!value);
-      feedback.textContent = value || '';
-    }
-  
-    if (path === 'form.status' && value === 'success') {
-      elements.input.classList.remove('is-invalid');
-      elements.feedback.textContent = '';
-      elements.form.reset();
-      elements.input.focus();
-    }
-  };
+export default (elements) => (path, value) => {
+  const { input, feedback, form } = elements;
+
+  if (path === 'form.error') {
+    input.classList.toggle('is-invalid', !!value);
+    feedback.textContent = value || '';
+  }
+
+  if (path === 'form.status' && value === 'success') {
+    input.classList.remove('is-invalid');
+    feedback.textContent = '';
+    form.reset();
+    input.focus();
+  }
+};
