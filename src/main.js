@@ -89,6 +89,7 @@ i18next.init({
     feedsContainer: document.querySelector('#feeds'),
     postsContainer: document.querySelector('#posts'),
     successMessage: document.createElement('p'),
+    successMessage: document.querySelector('#success-message'),
   };
 
   const state = {
@@ -107,6 +108,36 @@ i18next.init({
 
   const watchedState = onChange(state, view(elements, state), { isShallow: false });
 
+  const updateFeedsPeriodically = (watchedState) => {
+    const { feeds, posts } = watchedState;
+  
+    const promises = feeds.map((feed) => axios
+      .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
+      .then((response) => {
+        const { posts: newPosts } = parseRss(response.data.contents);
+        const existingLinks = new Set(posts.map((post) => post.link));
+        const freshPosts = newPosts
+          .filter((post) => !existingLinks.has(post.link))
+          .map((post) => ({
+            ...post,
+            id: uniqueId(),
+            feedId: feed.id,
+          }));
+  
+        if (freshPosts.length > 0) {
+          watchedState.posts = [...watchedState.posts, ...freshPosts];
+        }
+      })
+      .catch((error) => {
+        console.error('Ошибка при обновлении фида:', error);
+      }));
+  
+    Promise.all(promises)
+      .finally(() => {
+        setTimeout(() => updateFeedsPeriodically(watchedState), 5000);
+      });
+  };
+
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const url = elements.input.value.trim();
@@ -119,7 +150,7 @@ i18next.init({
     schema.validate(url)
       .then(() => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`))
       .then((response) => {
-        console.log(response.data.contents); // добавить лог
+        console.log(response.data.contents);
         const { feed, posts } = parseRss(response.data.contents);
         const feedId = uniqueId();
 
@@ -137,10 +168,14 @@ i18next.init({
         }));
 
         watchedState.feeds = [...state.feeds, preparedFeed];
-        watchedState.posts = [...state.posts, ...preparedPosts];
+        watchedState.posts = preparedPosts;
 
         watchedState.form.status = 'success';
-        document.querySelector('#success-message').textContent = 'RSS успешно загружен';
+        elements.successMessage.textContent = i18next.t('success.rssLoaded');
+
+        if (watchedState.feeds.length === 1) {
+          updateFeedsPeriodically(watchedState);
+        }
       })
 
       .catch((error) => {

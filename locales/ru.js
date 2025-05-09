@@ -5,10 +5,12 @@ export default {
     buttonAdd: 'Добавить',
     placeholder: 'Ссылка RSS',
     feedback: {
-      success: 'RSS успешно загружен',
       alreadyExists: 'RSS уже существует',
       notUrl: 'Ссылка должна быть валидным URL',
       required: 'Не должно быть пустым',
+    },
+    success: {
+      rssLoaded: 'RSS успешно загружен',
     },
   },
 };
