@@ -1,2 +1,2 @@
-echo "node_modules/" > .eslintignore
-echo "dist/" >> .eslintignore
+node_modules/
+dist/

@@ -205,9 +205,9 @@ i18next.init({
         if (error.name === 'ValidationError') {
           watchedState.form.error = error.message;
         } else if (error.message === 'ParsingError') {
-          watchedState.form.error = 'Ошибка парсинга RSS';
+          watchedState.form.error = i18next.t('errors.parsing');
         } else {
-          watchedState.form.error = 'Ошибка сети или недопустимый адрес';
+          watchedState.form.error = i18next.t('errors.network');
         }
       });
   });

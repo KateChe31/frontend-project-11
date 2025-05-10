@@ -14,5 +14,9 @@ export default {
     success: {
       rssLoaded: 'RSS успешно загружен',
     },
+    errors: {
+      parsing: 'Ресурс не содержит валидный RSS',
+      network: 'Ошибка сети',
+    },
   },
 };
