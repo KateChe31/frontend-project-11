@@ -71,7 +71,23 @@ i18next.init({
                 </div>
               </div>
             </form>
-          </div>
+          </div> 
+
+<div class="modal fade" id="modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog mt-3" tabindex="-1" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-start w-100" id="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${i18next.t('close')}"></button>
+      </div>
+      <div class="modal-body text-start" id="modal-body"></div>
+      <div class="modal-footer">
+        <a href="#" target="_blank" class="btn btn-primary" id="modal-full-article">${i18next.t('readFull')}</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${i18next.t('close')}</button>
+      </div>
+    </div>
+  </div>
+</div> 
 
         <div class="container mt-5">
         <div class="row">
@@ -88,8 +104,12 @@ i18next.init({
     feedback: document.querySelector('#feedback'),
     feedsContainer: document.querySelector('#feeds'),
     postsContainer: document.querySelector('#posts'),
-    successMessage: document.createElement('p'),
     successMessage: document.querySelector('#success-message'),
+    modal: {
+      title: document.querySelector('#modal-title'),
+      body: document.querySelector('#modal-body'),
+      fullArticle: document.querySelector('#modal-full-article'),
+    },
   };
 
   const state = {
@@ -99,6 +119,7 @@ i18next.init({
       status: null,
       error: null,
     },
+    readPosts: new Set(),
   };
 
   const getValidationSchema = (feedUrls) => yup.string()
@@ -108,9 +129,9 @@ i18next.init({
 
   const watchedState = onChange(state, view(elements, state), { isShallow: false });
 
-  const updateFeedsPeriodically = (watchedState) => {
+  const updateFeedsPeriodically = () => {
     const { feeds, posts } = watchedState;
-  
+
     const promises = feeds.map((feed) => axios
       .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
       .then((response) => {
@@ -123,7 +144,7 @@ i18next.init({
             id: uniqueId(),
             feedId: feed.id,
           }));
-  
+
         if (freshPosts.length > 0) {
           watchedState.posts = [...watchedState.posts, ...freshPosts];
         }
@@ -131,10 +152,10 @@ i18next.init({
       .catch((error) => {
         console.error('Ошибка при обновлении фида:', error);
       }));
-  
+
     Promise.all(promises)
       .finally(() => {
-        setTimeout(() => updateFeedsPeriodically(watchedState), 5000);
+        setTimeout(updateFeedsPeriodically, 5000);
       });
   };
 
@@ -150,7 +171,6 @@ i18next.init({
     schema.validate(url)
       .then(() => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`))
       .then((response) => {
-        console.log(response.data.contents);
         const { feed, posts } = parseRss(response.data.contents);
         const feedId = uniqueId();
 
@@ -190,5 +210,20 @@ i18next.init({
           watchedState.form.error = 'Ошибка сети или недопустимый адрес';
         }
       });
+  });
+
+  elements.postsContainer.addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON' && e.target.dataset.id) {
+      const postId = e.target.dataset.id;
+      const post = state.posts.find((p) => p.id === postId);
+      if (!post) return;
+
+      state.readPosts.add(postId);
+      watchedState.readPosts = new Set(state.readPosts);
+
+      elements.modal.title.textContent = post.title;
+      elements.modal.body.textContent = post.description;
+      elements.modal.fullArticle.href = post.link;
+    }
   });
 });
