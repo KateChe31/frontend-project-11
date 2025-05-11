@@ -56,6 +56,7 @@ i18next.init({
                       placeholder="${i18next.t('placeholder')}"
                       required
                       autofocus
+                      aria-label="url"
                     />
                     <label for="url-input">${i18next.t('placeholder')}</label>
                   </div>
@@ -74,7 +75,7 @@ i18next.init({
           </div> 
 
 <div class="modal fade" id="modal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog mt-3" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog mt-3">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title text-start w-100" id="modal-title"></h5>
