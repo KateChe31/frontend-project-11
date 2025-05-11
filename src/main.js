@@ -10,7 +10,7 @@ import axios from 'axios';
 import { uniqueId } from 'lodash';
 import javascriptLogo from './javascript.svg';
 import view from './view.js';
-import ru from '../locales/ru.js';
+import ru from './locales/ru.js';
 
 import parseRss from './parseRss.js';
 

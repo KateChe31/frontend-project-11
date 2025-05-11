@@ -37,13 +37,12 @@ const buildPosts = (posts, readPosts) => {
     a.setAttribute('rel', 'noopener noreferrer');
     a.textContent = title;
 
-    a.classList.add('d-block', 'text-start');
-
     if (readPosts.has(id)) {
       a.classList.add('fw-normal', 'link-secondary');
     } else {
       a.classList.add('fw-bold');
     }
+    a.classList.add('d-block', 'text-start');
 
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
