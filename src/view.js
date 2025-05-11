@@ -42,7 +42,6 @@ const buildPosts = (posts, readPosts) => {
     } else {
       a.classList.add('fw-bold');
     }
-    a.classList.add('d-block', 'text-start');
 
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
