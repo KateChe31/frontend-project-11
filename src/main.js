@@ -205,9 +205,11 @@ i18next.init({
 
         if (error.name === 'ValidationError') {
           watchedState.form.error = error.message
-        } else if (error.message === 'ParsingError') {
+        }
+        else if (error.message === 'ParsingError') {
           watchedState.form.error = i18next.t('errors.parsing')
-        } else {
+        }
+        else {
           watchedState.form.error = i18next.t('errors.network')
         }
       })

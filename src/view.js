@@ -39,7 +39,8 @@ const buildPosts = (posts, readPosts) => {
 
     if (readPosts.has(id)) {
       a.classList.add('fw-normal', 'link-secondary')
-    } else {
+    }
+    else {
       a.classList.add('fw-bold')
     }
 
