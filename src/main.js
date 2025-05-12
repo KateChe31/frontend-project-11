@@ -1,18 +1,18 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import './style.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import './style.css'
 
-import * as yup from 'yup';
-import onChange from 'on-change';
-import i18next from 'i18next';
+import * as yup from 'yup'
+import onChange from 'on-change'
+import i18next from 'i18next'
 
-import axios from 'axios';
-import { uniqueId } from 'lodash';
-import javascriptLogo from './javascript.svg';
-import view from './view.js';
-import ru from './locales/ru.js';
+import axios from 'axios'
+import { uniqueId } from 'lodash'
+import javascriptLogo from './javascript.svg'
+import view from './view.js'
+import ru from './locales/ru.js'
 
-import parseRss from './parseRss.js';
+import parseRss from './parseRss.js'
 
 i18next.init({
   lng: 'ru',
@@ -27,7 +27,7 @@ i18next.init({
       required: () => i18next.t('feedback.required'),
       notOneOf: () => i18next.t('feedback.alreadyExists'),
     },
-  });
+  })
 
   document.querySelector('#app').innerHTML = `
     <div class="hero-section">
@@ -97,7 +97,7 @@ i18next.init({
         </div>
       </div>
     </div>
-  `;
+  `
 
   const elements = {
     form: document.querySelector('#rss-form'),
@@ -111,7 +111,7 @@ i18next.init({
       body: document.querySelector('#modal-body'),
       fullArticle: document.querySelector('#modal-full-article'),
     },
-  };
+  }
 
   const state = {
     feeds: [],
@@ -121,110 +121,110 @@ i18next.init({
       error: null,
     },
     readPosts: new Set(),
-  };
+  }
 
-  const getValidationSchema = (feedUrls) => yup.string()
+  const getValidationSchema = feedUrls => yup.string()
     .url()
     .notOneOf(feedUrls)
-    .required();
+    .required()
 
-  const watchedState = onChange(state, view(elements, state), { isShallow: false });
+  const watchedState = onChange(state, view(elements, state), { isShallow: false })
 
   const updateFeedsPeriodically = () => {
-    const { feeds, posts } = watchedState;
+    const { feeds, posts } = watchedState
 
-    const promises = feeds.map((feed) => axios
+    const promises = feeds.map(feed => axios
       .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
-      .then((response) => {
-        const { posts: newPosts } = parseRss(response.data.contents);
-        const existingLinks = new Set(posts.map((post) => post.link));
+      .then(response => {
+        const { posts: newPosts } = parseRss(response.data.contents)
+        const existingLinks = new Set(posts.map(post => post.link))
         const freshPosts = newPosts
-          .filter((post) => !existingLinks.has(post.link))
-          .map((post) => ({
+          .filter(post => !existingLinks.has(post.link))
+          .map(post => ({
             ...post,
             id: uniqueId(),
             feedId: feed.id,
-          }));
+          }))
 
         if (freshPosts.length > 0) {
-          watchedState.posts = [...watchedState.posts, ...freshPosts];
+          watchedState.posts = [...watchedState.posts, ...freshPosts]
         }
       })
-      .catch((error) => {
-        console.error('Ошибка при обновлении фида:', error);
-      }));
+      .catch(error => {
+        console.error('Ошибка при обновлении фида:', error)
+      }))
 
     Promise.all(promises)
       .finally(() => {
-        setTimeout(updateFeedsPeriodically, 5000);
-      });
-  };
+        setTimeout(updateFeedsPeriodically, 5000)
+      })
+  }
 
-  elements.form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const url = elements.input.value.trim();
+  elements.form.addEventListener('submit', e => {
+    e.preventDefault()
+    const url = elements.input.value.trim()
 
-    watchedState.form.error = null;
-    watchedState.form.status = null;
+    watchedState.form.error = null
+    watchedState.form.status = null
 
-    const schema = getValidationSchema(state.feeds.map((f) => f.url));
+    const schema = getValidationSchema(state.feeds.map(f => f.url))
 
     schema.validate(url)
       .then(() => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`))
-      .then((response) => {
-        const { feed, posts } = parseRss(response.data.contents);
-        const feedId = uniqueId();
+      .then(response => {
+        const { feed, posts } = parseRss(response.data.contents)
+        const feedId = uniqueId()
 
         const preparedFeed = {
           id: feedId,
           title: feed.title,
           description: feed.description,
           url,
-        };
+        }
 
-        const preparedPosts = posts.map((post) => ({
+        const preparedPosts = posts.map(post => ({
           ...post,
           id: uniqueId(),
           feedId,
-        }));
+        }))
 
-        watchedState.feeds = [...state.feeds, preparedFeed];
-        watchedState.posts = preparedPosts;
+        watchedState.feeds = [...state.feeds, preparedFeed]
+        watchedState.posts = preparedPosts
 
-        watchedState.form.status = 'success';
-        elements.successMessage.textContent = i18next.t('success.rssLoaded');
+        watchedState.form.status = 'success'
+        elements.successMessage.textContent = i18next.t('success.rssLoaded')
 
         if (watchedState.feeds.length === 1) {
-          updateFeedsPeriodically(watchedState);
+          updateFeedsPeriodically(watchedState)
         }
       })
 
-      .catch((error) => {
-        watchedState.form.status = 'error';
-        document.querySelector('#success-message').textContent = '';
+      .catch(error => {
+        watchedState.form.status = 'error'
+        document.querySelector('#success-message').textContent = ''
 
         if (error.name === 'ValidationError') {
-          watchedState.form.error = error.message;
+          watchedState.form.error = error.message
         } else if (error.message === 'ParsingError') {
-          watchedState.form.error = i18next.t('errors.parsing');
+          watchedState.form.error = i18next.t('errors.parsing')
         } else {
-          watchedState.form.error = i18next.t('errors.network');
+          watchedState.form.error = i18next.t('errors.network')
         }
-      });
-  });
+      })
+  })
 
-  elements.postsContainer.addEventListener('click', (e) => {
+  elements.postsContainer.addEventListener('click', e => {
     if (e.target.tagName === 'BUTTON' && e.target.dataset.id) {
-      const postId = e.target.dataset.id;
-      const post = state.posts.find((p) => p.id === postId);
-      if (!post) return;
+      const postId = e.target.dataset.id
+      const post = state.posts.find(p => p.id === postId)
+      if (!post) return
 
-      state.readPosts.add(postId);
-      watchedState.readPosts = new Set(state.readPosts);
+      state.readPosts.add(postId)
+      watchedState.readPosts = new Set(state.readPosts)
 
-      elements.modal.title.textContent = post.title;
-      elements.modal.body.textContent = post.description;
-      elements.modal.fullArticle.href = post.link;
+      elements.modal.title.textContent = post.title
+      elements.modal.body.textContent = post.description
+      elements.modal.fullArticle.href = post.link
     }
-  });
-});
+  })
+})

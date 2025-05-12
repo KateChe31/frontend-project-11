@@ -19,4 +19,4 @@ export default {
       network: 'Ошибка сети',
     },
   },
-};
+}

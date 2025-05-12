@@ -1,16 +1,16 @@
-import globals from 'globals';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
-import pluginJs from '@eslint/js';
-import importPlugin from 'eslint-plugin-import';
+import globals from 'globals'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { FlatCompat } from '@eslint/eslintrc'
+import pluginJs from '@eslint/js'
+import importPlugin from 'eslint-plugin-import'
 
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
 const compat = new FlatCompat({
   baseDirectory: dirname,
   recommendedConfig: pluginJs.configs.recommended,
-});
+})
 
 export default [
   {
@@ -52,9 +52,9 @@ export default [
       'import/no-named-as-default-member': 'off',
       'no-console': 'off',
       'import/no-extraneous-dependencies': 'off',
-      '@stylistic/semi': 'off',
-      '@stylistic/arrow-parens': 'off',
-      '@stylistic/brace-style': 'off',
+      semi: ['error', 'never'],
+      'brace-style': ['error', '1tbs', { allowSingleLine: false }],
+      'arrow-parens': ['error', 'as-needed'],
     },
   },
-];
+]
