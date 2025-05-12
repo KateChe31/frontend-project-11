@@ -1,4 +1,4 @@
-const buildFeeds = feeds => {
+const buildFeeds = (feeds) => {
   const container = document.createElement('div')
   const header = document.createElement('h2')
   header.textContent = 'Фиды'

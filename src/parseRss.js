@@ -1,4 +1,4 @@
-export default xml => {
+export default (xml) => {
   const parser = new DOMParser()
   const parsed = parser.parseFromString(xml, 'application/xml')
   const parserError = parsed.querySelector('parsererror')
@@ -12,7 +12,7 @@ export default xml => {
   }
 
   const items = [...parsed.querySelectorAll('item')]
-  const posts = items.map(item => ({
+  const posts = items.map((item) => ({
     title: item.querySelector('title')?.textContent ?? '',
     link: item.querySelector('link')?.textContent ?? '',
     description: item.querySelector('description')?.textContent ?? '',

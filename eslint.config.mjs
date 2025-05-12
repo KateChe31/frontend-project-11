@@ -54,7 +54,8 @@ export default [
       'import/no-extraneous-dependencies': 'off',
       semi: ['error', 'never'],
       'brace-style': ['error', '1tbs', { allowSingleLine: false }],
-      'arrow-parens': ['error', 'as-needed'],
+      'arrow-parens': ['error', 'always'],
+      'quote-props': ['error', 'as-needed'],
     },
   },
 ]
