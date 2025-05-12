@@ -123,7 +123,7 @@ i18next.init({
     readPosts: new Set(),
   }
 
-  const getValidationSchema = (feedUrls) => yup.string()
+  const getValidationSchema = feedUrls => yup.string()
     .url()
     .notOneOf(feedUrls)
     .required()
@@ -133,14 +133,14 @@ i18next.init({
   const updateFeedsPeriodically = () => {
     const { feeds, posts } = watchedState
 
-    const promises = feeds.map((feed) => axios
+    const promises = feeds.map(feed => axios
       .get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(feed.url)}`)
       .then((response) => {
         const { posts: newPosts } = parseRss(response.data.contents)
-        const existingLinks = new Set(posts.map((post) => post.link))
+        const existingLinks = new Set(posts.map(post => post.link))
         const freshPosts = newPosts
-          .filter((post) => !existingLinks.has(post.link))
-          .map((post) => ({
+          .filter(post => !existingLinks.has(post.link))
+          .map(post => ({
             ...post,
             id: uniqueId(),
             feedId: feed.id,
@@ -167,7 +167,7 @@ i18next.init({
     watchedState.form.error = null
     watchedState.form.status = null
 
-    const schema = getValidationSchema(state.feeds.map((f) => f.url))
+    const schema = getValidationSchema(state.feeds.map(f => f.url))
 
     schema.validate(url)
       .then(() => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`))
@@ -182,7 +182,7 @@ i18next.init({
           url,
         }
 
-        const preparedPosts = posts.map((post) => ({
+        const preparedPosts = posts.map(post => ({
           ...post,
           id: uniqueId(),
           feedId,
@@ -218,7 +218,7 @@ i18next.init({
   elements.postsContainer.addEventListener('click', (e) => {
     if (e.target.tagName === 'BUTTON' && e.target.dataset.id) {
       const postId = e.target.dataset.id
-      const post = state.posts.find((p) => p.id === postId)
+      const post = state.posts.find(p => p.id === postId)
       if (!post) return
 
       state.readPosts.add(postId)
